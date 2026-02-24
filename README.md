@@ -189,22 +189,6 @@ Experimental configuration used in the paper:
 
 ---
 
-## Citation
-
-If you use this code in your research, please cite:
-
-```bibtex
-@article{gabauer2026xml,
-  title   = {A Modular {XML}-Based Pipeline for Reproducible Scientific Data Processing:
-             Schema Validation and Provenance Tracking},
-  author  = {Gabauer, Christoph},
-  journal = {SN Computer Science},
-  year    = {2026}
-}
-```
-
----
-
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
