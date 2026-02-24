@@ -1,1 +1,0 @@
-This directory is created at runtime. See xml_generator.py.
