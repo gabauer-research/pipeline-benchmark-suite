@@ -62,37 +62,51 @@ pip install lxml psutil
 
 ## Usage
 
-### 1. Initialise the database
+### Functional Validation
 
+The `xml/` directory contains five example documents (two valid, three intentionally
+invalid) that demonstrate the validation behaviour of the pipeline.
+
+**1. Initialise the database**
 ```bash
 python src/db_init.py
 ```
 
-### 2. Run the pipeline
-
-Process all XML files in the `xml/` directory:
-
+**2. Run the pipeline**
 ```bash
 python src/pipeline.py
 ```
 
-The pipeline will validate each file against `schema/schema.xsd`, persist valid measurements to SQLite, and record provenance metadata for every processing event.
+The pipeline validates each file in `xml/` against `schema/schema.xsd`. Valid documents
+(`valid_01.xml`, `valid_02.xml`) are persisted to SQLite and provenance records are
+written for every processing event. Invalid documents (`invalid_constraints.xml`,
+`invalid_missing_metadata.xml`, `invalid_structure.xml`) are rejected at the validation
+stage and logged for auditability.
 
-### 3. Generate synthetic test data
+---
 
+### Performance Evaluation
+
+**1. Initialise the database**
+```bash
+python src/db_init.py
+```
+
+**2. Generate synthetic test data**
 ```bash
 python src/xml_generator.py
 ```
 
-Generates 1000 schema-conformant XML files in `xml_pool/` for performance evaluation.
+Generates 1000 schema-conformant XML files in `xml_pool/`.
 
-### 4. Run the performance evaluation
-
+**3. Run the experiments**
 ```bash
 python src/experiment_runner.py
 ```
 
-Executes controlled experiments across batch sizes of 100, 200, 500, and 1000 files with 20 repeated runs per configuration. Results are written to `results/experiment_results.txt`.
+Executes controlled experiments across batch sizes of 100, 200, 500, and 1000 files
+with 20 repeated runs per configuration. Results are written to
+`results/experiment_results.txt`.
 
 ---
 
