@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<measurement>
+    <metadata>
+        <measurement_id>M005</measurement_id>
+        <timestamp>2026-02-16T14:00:00</timestamp>
+        <geraet>Messstation_D</geraet>
+    </metadata>
+
+    <data>
+        <druck>1.0</druck>
+        <temperatur>25.0</temperatur>
+        <frequenz>60.0</frequenz>
+        <pumpe>OFF</pumpe>
+
+        <!-- sensoren fehlt komplett -->
+    </data>
+</measurement>

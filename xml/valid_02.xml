@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<measurement>
+    <metadata>
+        <measurement_id>M002</measurement_id>
+        <timestamp>2026-02-16T11:00:00</timestamp>
+        <geraet>Messstation_B</geraet>
+    </metadata>
+
+    <data>
+        <druck>0.55</druck>
+        <temperatur>18.0</temperatur>
+        <frequenz>10.0</frequenz>
+        <pumpe>OFF</pumpe>
+
+        <sensoren>
+            <sensor>
+                <id>S1</id>
+                <wert>0.45</wert>
+            </sensor>
+        </sensoren>
+    </data>
+</measurement>

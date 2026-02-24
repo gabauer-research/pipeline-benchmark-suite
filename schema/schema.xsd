@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <!-- Root element -->
+    <xs:element name="measurement">
+        <xs:complexType>
+            <xs:sequence>
+
+                <!-- ========================= -->
+                <!--        METADATA           -->
+                <!-- ========================= -->
+                <xs:element name="metadata">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="measurement_id" type="xs:string"/>
+                            <xs:element name="timestamp" type="xs:dateTime"/>
+                            <xs:element name="operator" type="xs:string" minOccurs="0"/>
+                            <xs:element name="geraet" type="xs:string"/>
+                            <xs:element name="parameter" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <!-- ========================= -->
+                <!--        DATA SECTION       -->
+                <!-- ========================= -->
+                <xs:element name="data">
+                    <xs:complexType>
+                        <xs:sequence>
+
+                            <!-- Messwerte -->
+                            <xs:element name="druck">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:decimal">
+                                        <xs:minInclusive value="0"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+
+                            <xs:element name="temperatur">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:decimal">
+                                        <xs:minInclusive value="-273.15"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+
+                            <xs:element name="frequenz">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:decimal">
+                                        <xs:minInclusive value="0"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+
+                            <xs:element name="pumpe" type="xs:string"/>
+
+                            <!-- Sensorliste -->
+                            <xs:element name="sensoren">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="sensor" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="id" type="xs:string"/>
+                                                    <xs:element name="wert" type="xs:decimal"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
