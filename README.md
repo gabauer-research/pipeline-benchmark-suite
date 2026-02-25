@@ -7,7 +7,7 @@
 This repository contains the source code accompanying the paper:
 
 > **A Modular XML-Based Pipeline for Reproducible Scientific Data Processing: Schema Validation and Provenance Tracking**  
-> Christoph Gabauer, *SN Computer Science*, 2026
+> Christoph Gabauer, *submitted to SN Computer Science*, 2026
 
 ---
 
