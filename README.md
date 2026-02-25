@@ -172,13 +172,12 @@ GROUP BY pipeline_version;
 
 ## Reproducibility
 
-To reproduce the performance evaluation results reported in the paper:
+To reproduce the performance evaluation results reported in the paper, 
+follow the steps under [Performance Evaluation](#performance-evaluation).
 
-1. Generate the XML pool: `python src/xml_generator.py`
-2. Initialise the database: `python src/db_init.py`
-3. Run the experiments: `python src/experiment_runner.py`
-
-Each run resets the database to identical initial conditions before measurement. A warm-up run is performed prior to timed execution to minimise caching effects.
+Each run resets the database to identical initial conditions before 
+measurement. A warm-up run is performed prior to timed execution to 
+minimise caching effects.
 
 Experimental configuration used in the paper:
 - OS: Windows 11 Pro (Build 26200)
