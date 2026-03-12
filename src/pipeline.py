@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Feb 16 13:41:14 2026
+Pipeline orchestrator for the XML measurement data pipeline.
+Coordinates validation, metadata extraction, and database persistence
+with stage-level performance monitoring and provenance logging.
 
-@author: cgaba
+License: MIT
 """
 
 import os
@@ -27,7 +29,7 @@ class Pipeline:
         self.pipeline_version = pipeline_version
         self.db_path = db_path
 
-        # Validator & Extractor bekommen Versionen mit
+        # Pass version info to validator and extractor
         self.validator = XMLValidator(
             schema_path=schema_path,
             schema_version=schema_version,
@@ -39,26 +41,28 @@ class Pipeline:
             pipeline_version=pipeline_version
         )
         
-        # Für Memory-Peak-Tracking
+        # For peak memory tracking
         self.peak_memory = 0
         self.monitoring = False
 
     def _monitor_memory(self):
-        """Background-Thread der kontinuierlich den Peak Memory trackt."""
+        """Background thread for continuous peak memory tracking."""
         process = psutil.Process()
         while self.monitoring:
             current_mem = process.memory_info().rss / (1024 * 1024)  # in MB
             self.peak_memory = max(self.peak_memory, current_mem)
-            time.sleep(0.01)  # Sample alle 10ms
+            time.sleep(0.01)  # Sample every 10ms
 
     def run(self, file_list=None):
         """
-        Durchläuft alle XML-Dateien im xml/-Ordner
-        und führt Validierung, Extraktion, DB-Insert und Logging durch.
-        JETZT MIT ECHTEM PEAK MEMORY TRACKING.
-        
+        Process all XML files through validation, extraction, and persistence.
+
         Args:
-            file_list: Optional - Liste von Dateinamen. Wenn None, werden alle XMLs im xml_dir verarbeitet.
+            file_list: Optional list of filenames. If None, all XML files
+                       in xml_dir are processed.
+
+        Returns:
+            Dict with total, successful, failed counts and peak memory in MB.
         """
 
         if file_list is None:
@@ -71,7 +75,7 @@ class Pipeline:
         successful_runs = 0
         failed_runs = 0
         
-        # Memory-Monitoring starten
+        # Start memory monitoring
         self.peak_memory = 0
         self.monitoring = True
         monitor_thread = threading.Thread(target=self._monitor_memory, daemon=True)
@@ -80,12 +84,12 @@ class Pipeline:
         for filename in xml_files:
             xml_path = os.path.join(self.xml_dir, filename)
 
-            # Performance-Tracking starten
+            # Start per-file performance tracking
             pipeline_start = time.perf_counter()
             
             metrics = {}
 
-            # 1. Validierung (loggt selbst)
+            # 1. Validation (self-logging)
             val_start = time.perf_counter()
             validation_result = self.validator.validate(xml_path)
             metrics['validation_time_ms'] = (time.perf_counter() - val_start) * 1000
@@ -94,7 +98,7 @@ class Pipeline:
                 failed_runs += 1
                 continue
 
-            # 2. Metadaten extrahieren (loggt selbst)
+            # 2. Metadata extraction (self-logging)
             ext_start = time.perf_counter()
             meta = self.extractor.extract_metadata(xml_path)
             metrics['extraction_time_ms'] = (time.perf_counter() - ext_start) * 1000
@@ -105,7 +109,7 @@ class Pipeline:
 
             measurement_id = meta["data"]["id"]
 
-            # 3. Metadaten in DB speichern (loggt selbst)
+            # 3. Persist metadata to database (self-logging)
             pers_start = time.perf_counter()
             ok, err = self.extractor.insert_metadata(meta["data"], xml_path)
             metrics['persistence_time_ms'] = (time.perf_counter() - pers_start) * 1000
@@ -114,13 +118,13 @@ class Pipeline:
                 failed_runs += 1
                 continue
 
-            # 4. Gesamtmetriken berechnen
+            # 4. Compute total pipeline metrics
             metrics['processing_time_ms'] = (time.perf_counter() - pipeline_start) * 1000
             
-            # Peak Memory wird vom Background-Thread getrackt
+            # Peak memory is tracked by background thread
             metrics['memory_peak_mb'] = self.peak_memory
 
-            # 5. Pipeline abgeschlossen MIT METRIKEN (nur dieser Schritt wird hier geloggt)
+            # 5. Log pipeline completion with full stage metrics
             log_provenance(
                 measurement_id=measurement_id,
                 step="pipeline",
@@ -137,7 +141,7 @@ class Pipeline:
 
             successful_runs += 1
 
-        # Memory-Monitoring stoppen
+        # Stop memory monitoring
         self.monitoring = False
         monitor_thread.join(timeout=0.1)
 
@@ -145,7 +149,7 @@ class Pipeline:
             "total": len(xml_files),
             "successful": successful_runs,
             "failed": failed_runs,
-            "peak_memory_mb": self.peak_memory  # Echter Peak über gesamten Batch
+            "peak_memory_mb": self.peak_memory  # True peak across entire batch
         }
 
 
@@ -153,4 +157,5 @@ if __name__ == "__main__":
     pipeline = Pipeline()
     result = pipeline.run()
     print(f"\nErgebnis: {result['successful']}/{result['total']} erfolgreich verarbeitet")
+
     print(f"Peak Memory: {result['peak_memory_mb']:.2f}MB")
