@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Feb 16 13:40:29 2026
+Provenance logger for the XML measurement data pipeline.
+Writes structured provenance records to SQLite with stage-level
+performance metrics for FAIR-compliant reproducibility.
 
-@author: cgaba
+License: MIT
 """
 
 import sqlite3
@@ -30,17 +32,22 @@ class ProvenanceLogger:
         persistence_time_ms=None
     ):
         """
-        Schreibt einen Provenance-Eintrag in die SQLite-Datenbank.
-        Neue Felder:
-            xml_file
-            xsd_schema
-            schema_version
-            pipeline_version
-            processing_time_ms
-            memory_peak_mb
-            validation_time_ms
-            extraction_time_ms
-            persistence_time_ms
+        Write a provenance record to the SQLite database.
+
+        Args:
+            measurement_id: Identifier of the measurement being processed.
+            step: Pipeline stage (e.g. 'validation', 'extraction', 'pipeline').
+            status: Outcome status ('success' or 'error').
+            message: Optional descriptive message.
+            xml_file: Source XML filename.
+            xsd_schema: XSD schema filename used for validation.
+            schema_version: Version of the XSD schema.
+            pipeline_version: Version of the pipeline software.
+            processing_time_ms: Total processing time in milliseconds.
+            memory_peak_mb: Peak RSS memory in megabytes.
+            validation_time_ms: Time spent in validation stage.
+            extraction_time_ms: Time spent in extraction stage.
+            persistence_time_ms: Time spent in persistence stage.
         """
 
         timestamp = datetime.now().isoformat()
@@ -93,7 +100,7 @@ class ProvenanceLogger:
             return False, str(e)
 
 
-# Komfortfunktion für direkten Import
+# Convenience function for direct import
 def log_provenance(*args, **kwargs):
     logger = ProvenanceLogger()
     return logger.log_provenance(*args, **kwargs)
@@ -111,4 +118,5 @@ if __name__ == "__main__":
         schema_version="1.0",
         pipeline_version="0.9.1"
     )
+
     print("Log:", ok, err)
