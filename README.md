@@ -181,7 +181,7 @@ minimise caching effects.
 
 Experimental configuration used in the paper:
 - OS: Windows 11 Pro (Build 26200)
-- CPU: AMD Ryzen 7 7800X3D (8 cores, 4.20 GHz base)
+- CPU: 8 cores, 4.20 GHz
 - RAM: 32 GB
 - Python: 3.13.11
 - SQLite: 3.51.2
