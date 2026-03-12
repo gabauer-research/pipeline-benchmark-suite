@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Feb 16 13:38:27 2026
+XML validator for the XML measurement data pipeline.
+Validates XML files against an XSD schema with provenance logging
+for both successful and failed validation outcomes.
 
-@author: cgaba
+License: MIT
 """
 
 import os
 from lxml import etree
-from provenance import log_provenance   # <-- wichtig: Provenance-Logger importieren
+from provenance import log_provenance
 
 
 class XMLValidator:
@@ -16,19 +18,19 @@ class XMLValidator:
         self.schema_version = schema_version
         self.pipeline_version = pipeline_version
 
-        # XSD laden
+        # Load XSD schema
         with open(schema_path, "rb") as f:
             schema_doc = etree.XML(f.read())
             self.schema = etree.XMLSchema(schema_doc)
 
     def validate(self, xml_path):
         """
-        Validiert eine XML-Datei gegen das XSD.
-        Gibt ein Dict zurück:
-        {
-            "valid": True/False,
-            "errors": [Liste von Fehlermeldungen]
-        }
+        Validate an XML file against the XSD schema.
+
+        Returns:
+            Dict with keys:
+                'valid': bool,
+                'errors': list of error messages
         """
 
         xml_filename = os.path.basename(xml_path)
@@ -38,7 +40,7 @@ class XMLValidator:
             xml_doc = etree.parse(xml_path)
             self.schema.assertValid(xml_doc)
 
-            # --- Provenance: Erfolg ---
+            # Provenance: success
             log_provenance(
                 measurement_id=xml_filename,
                 step="validation",
@@ -56,11 +58,11 @@ class XMLValidator:
             }
 
         except etree.DocumentInvalid as e:
-            # Fehler extrahieren
+            # Extract validation errors
             error_log = self.schema.error_log
             errors = [str(err) for err in error_log]
 
-            # --- Provenance: Fehler ---
+            # Provenance: error
             log_provenance(
                 measurement_id=xml_filename,
                 step="validation",
@@ -78,7 +80,7 @@ class XMLValidator:
             }
 
         except Exception as e:
-            # Allgemeine Fehler (z. B. Datei nicht gefunden)
+            # General errors (e.g. file not found)
             msg = f"Unexpected error: {str(e)}"
 
             log_provenance(
@@ -105,3 +107,4 @@ if __name__ == "__main__":
 
     print(f"Validierung von {test_file}:")
     print(result)
+
