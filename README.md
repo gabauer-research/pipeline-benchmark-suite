@@ -147,6 +147,8 @@ The SQLite database (`db/pipeline.db`) contains two tables:
 
 ## Provenance Queries (Examples)
 
+Queries can be executed using the SQLite CLI or any SQLite-compatible client (e.g. [DB Browser for SQLite](https://sqlitebrowser.org/)).
+
 ```sql
 -- Processing history for a specific file
 SELECT step, status, message, timestamp
