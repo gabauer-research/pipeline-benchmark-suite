@@ -49,13 +49,13 @@ Key properties:
 ## Requirements
 
 - Python 3.13+
-- [lxml](https://lxml.de/) – XML parsing and XSD validation
-- [psutil](https://github.com/giampaolo/psutil) – memory monitoring
+- [lxml](https://lxml.de/) 6.0.2 – XML parsing and XSD validation
+- [psutil](https://github.com/giampaolo/psutil) 7.2.2 – memory monitoring
 
 Install dependencies:
 
 ```bash
-pip install lxml psutil
+pip install -r requirements.txt
 ```
 
 ---
