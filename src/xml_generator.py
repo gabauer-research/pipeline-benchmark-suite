@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Generiert valide XML-Dateien entsprechend dem XSD-Schema
-für Performance-Tests
-@author: cgaba
+XML test data generator for the XML measurement data pipeline.
+Generates valid XML files conforming to the XSD schema for performance evaluation.
+
+License: MIT
 """
+
 import os
 from datetime import datetime, timedelta
 import random
@@ -17,15 +19,15 @@ PUMPEN = ["Pumpe_1", "Pumpe_2", "Pumpe_3", "Pumpe_Alpha", "Pumpe_Beta"]
 
 
 def generate_xml(measurement_id, geraet, operator, parameter, timestamp):
-    """Generiert eine valide XML-Datei entsprechend dem XSD-Schema."""
+    """Generate a valid XML file conforming to the XSD schema."""
     
-    # Zufällige Messwerte
+    # Random measurement values
     druck = round(random.uniform(1.0, 10.0), 2)
     temperatur = round(random.uniform(-50.0, 150.0), 2)
     frequenz = round(random.uniform(50.0, 60.0), 2)
     pumpe = random.choice(PUMPEN)
     
-    # Zufällige Anzahl Sensoren (2-5)
+    # Random number of sensors (2-5)
     num_sensors = random.randint(2, 5)
     sensoren_xml = ""
     for i in range(num_sensors):
@@ -61,10 +63,10 @@ def generate_xml(measurement_id, geraet, operator, parameter, timestamp):
 
 def generate_dataset(num_files=1000):
     """
-    Generiert ein Dataset mit unterschiedlichen validen XMLs.
-    
+    Generate a dataset of distinct valid XML files.
+
     Args:
-        num_files: Anzahl zu generierender XML-Dateien
+        num_files: Number of XML files to generate.
     """
     
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -95,5 +97,6 @@ def generate_dataset(num_files=1000):
 
 
 if __name__ == "__main__":
-    # Generiere 1000 unterschiedliche XMLs
+    # Generate 1000 distinct XML files
+
     generate_dataset(1000)
