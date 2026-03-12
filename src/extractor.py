@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Feb 16 13:39:40 2026
+Metadata extractor for the XML measurement data pipeline.
+Parses measurement metadata from XML files and persists it to SQLite
+with provenance logging at each stage.
 
-@author: cgaba
+License: MIT
 """
 
 import os
@@ -32,7 +34,7 @@ class MetadataExtractor:
             tree = etree.parse(xml_path)
             root = tree.getroot()
 
-            # Metadaten auslesen
+            # Read metadata section
             metadata = root.find("metadata")
             if metadata is None:
                 msg = "metadata section missing"
@@ -58,7 +60,7 @@ class MetadataExtractor:
             operator = metadata.findtext("operator")
             parameter = metadata.findtext("parameter")
 
-            # Pflichtfelder prüfen
+            # Validate required fields
             if not measurement_id or not timestamp or not geraet:
                 msg = "missing required metadata fields"
 
@@ -85,7 +87,7 @@ class MetadataExtractor:
                 "parameter": parameter
             }
 
-            # --- Provenance: Erfolg ---
+            # Provenance: success
             log_provenance(
                 measurement_id=measurement_id,
                 step="metadata_extraction",
@@ -121,7 +123,10 @@ class MetadataExtractor:
 
     def insert_metadata(self, data, xml_path=None):
         """
-        Speichert extrahierte Metadaten in SQLite.
+        Persist extracted metadata to SQLite.
+
+        Returns:
+            Tuple of (success: bool, error: str or None)
         """
         xml_filename = os.path.basename(xml_path) if xml_path else None
 
@@ -143,7 +148,7 @@ class MetadataExtractor:
             conn.commit()
             conn.close()
 
-            # --- Provenance: Erfolg ---
+            # Provenance: success
             log_provenance(
                 measurement_id=data["id"],
                 step="db_insert",
@@ -178,3 +183,4 @@ if __name__ == "__main__":
     if result["success"]:
         ok, err = extractor.insert_metadata(result["data"], "../xml/valid_01.xml")
         print("DB insert:", ok, err)
+
