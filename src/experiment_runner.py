@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Experiment Runner für journal-konforme Performance-Evaluation
+Performance evaluation runner for the XML measurement data pipeline.
+Tests the pipeline under controlled conditions across varying batch sizes
+with repeated runs, database resets, and stage-level metric collection.
 
-Testet die Pipeline mit kontrollierten Bedingungen:
-- Verschiedene Batchgrößen (100, 200, 500, 1000 XMLs)
-- 20 Wiederholungen pro Batchgröße
-- DB-Reset vor jedem Run
-- Warmup-Run
-- Stage-Metriken (Validation/Extraction/Persistence)
-
-@author: cgaba
+License: MIT
 """
 
 import os
@@ -20,18 +15,18 @@ import statistics
 from pipeline import Pipeline
 from db_init import init_db
 
-# Konfiguration
-XML_SOURCE = "../xml_pool/"           # Pool mit allen verfügbaren XMLs
-XML_WORKDIR = "../xml_experiment/"  # Temporäres Arbeitsverzeichnis für Experimente
+# Configuration
+XML_SOURCE = "../xml_pool/"           # Pool of all available XML files
+XML_WORKDIR = "../xml_experiment/"  # # Temporary working directory for experiments
 DB_PATH = "../db/pipeline.db"
 RESULTS_FILE = "../results/experiment_results.txt"
 
-BATCH_SIZES = [100, 200, 500, 1000]    # Anzahl XMLs pro Experiment
-RUNS = 20                               # Wiederholungen pro Batchgröße
+BATCH_SIZES = [100, 200, 500, 1000]    # Number of XML files per experiment
+RUNS = 20                               # Repetitions per batch size
 
 
 def reset_database():
-    """Löscht und initialisiert die Datenbank neu."""
+    """Delete and reinitialize the pipeline database."""
     if os.path.exists(DB_PATH):
         os.remove(DB_PATH)
     init_db()
@@ -39,28 +34,28 @@ def reset_database():
 
 def prepare_batch(batch_size):
     """
-    Bereitet ein kontrolliertes Dataset vor.
-    
+    Prepare a controlled XML dataset of the given size.
+
     Args:
-        batch_size: Anzahl der XML-Dateien
-    
+        batch_size: Number of XML files to prepare.
+
     Returns:
-        Liste der Dateinamen
+        List of filenames in the working directory.
     """
-    # Workdir leeren und neu erstellen
+    # Clear and recreate working directory
     if os.path.exists(XML_WORKDIR):
         shutil.rmtree(XML_WORKDIR)
     os.makedirs(XML_WORKDIR)
 
-    # Alle verfügbaren XMLs laden
+    # Load all available XML files
     all_files = sorted([f for f in os.listdir(XML_SOURCE) if f.endswith(".xml")])
     
-    # Falls nicht genug Dateien vorhanden: wiederholen
+    # Repeat files if pool is smaller than batch size
     selected = []
     for i in range(batch_size):
         file_to_copy = all_files[i % len(all_files)]
         
-        # Eindeutigen Namen generieren falls Duplikat
+        # Generate unique filename for duplicates
         if i >= len(all_files):
             base, ext = os.path.splitext(file_to_copy)
             target_name = f"{base}_copy{i}{ext}"
@@ -78,10 +73,11 @@ def prepare_batch(batch_size):
 
 def get_stage_metrics_from_db():
     """
-    Extrahiert Stage-Metriken (Validation/Extraction/Persistence) aus der DB.
-    
+    Extract per-stage timing metrics from the provenance table.
+
     Returns:
-        dict mit mean/median/std für jede Stage
+        Dict with mean, median, and std for validation, extraction, and persistence stages,
+        or None if no records are found.
     """
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -126,7 +122,7 @@ def get_stage_metrics_from_db():
 
 
 def save_results(results):
-    """Speichert Experiment-Ergebnisse in Datei."""
+    """Write experiment results to the results file."""
     os.makedirs(os.path.dirname(RESULTS_FILE), exist_ok=True)
     
     with open(RESULTS_FILE, "w", encoding="utf-8") as f:
@@ -178,7 +174,7 @@ def save_results(results):
 
 
 def run_experiments():
-    """Führt kontrollierte Experimente durch."""
+    """Run controlled performance experiments across all configured batch sizes."""
     
     print("=" * 80)
     print("STARTING PERFORMANCE EVALUATION")
@@ -198,29 +194,29 @@ def run_experiments():
         for run in range(RUNS):
             print(f"Run {run + 1}/{RUNS}...", end=" ")
             
-            # WICHTIG: Gleiche Startbedingungen
+            # Ensure identical starting conditions for each run
             reset_database()
             file_list = prepare_batch(batch_size)
             
             # Pipeline mit temporärem Arbeitsverzeichnis
             pipeline = Pipeline(xml_dir=XML_WORKDIR)
             
-            # Warmup (nur beim ersten Run)
+            # Warmup run (first iteration only)
             if run == 0:
                 print("(Warmup)...", end=" ")
                 pipeline.run(file_list)
-                reset_database()  # Nach Warmup auch resetten
+                reset_database()  # Reset after warmup
             
-            # Eigentlicher Messrun
+            # Actual measurement run
             start = time.perf_counter()
             result = pipeline.run(file_list)
             runtime = time.perf_counter() - start
             
-            # Metriken berechnen
+            # Compute throughput
             successful = result['successful']
             throughput = successful / runtime if runtime > 0 else 0
             
-            # Peak Memory aus DB auslesen
+            # Read peak memory from provenance table
             conn = sqlite3.connect(DB_PATH)
             cursor = conn.cursor()
             cursor.execute("""
@@ -238,12 +234,11 @@ def run_experiments():
             
             print(f"✓ {runtime*1000:.2f}ms ({throughput:.2f} files/s, {avg_memory:.2f}MB)")
         
-        # Statistiken berechnen (MIT MEDIAN!)
+        # Compute summary statistics
         mean_runtime = statistics.mean(runtimes)
         median_runtime = statistics.median(runtimes)
         
-        # WICHTIG: Stage-Metriken aus der DB holen (VOR dem finalen Reset!)
-        # Wir nehmen die Daten vom letzten Run als repräsentativ
+        # Collect stage metrics from last run before final reset
         stage_metrics = get_stage_metrics_from_db()
         
         results[batch_size] = {
@@ -279,7 +274,7 @@ def run_experiments():
         
         print(f"{'='*80}")
     
-    # Ergebnisse speichern
+    # Save results to file
     save_results(results)
     
     print(f"\n{'='*80}")
@@ -289,4 +284,5 @@ def run_experiments():
 
 
 if __name__ == "__main__":
+
     run_experiments()
