@@ -29,7 +29,7 @@ class Pipeline:
         self.pipeline_version = pipeline_version
         self.db_path = db_path
 
-        # Pass version info to validator and extractor
+        # Pass version information to validator and extractor
         self.validator = XMLValidator(
             schema_path=schema_path,
             schema_version=schema_version,
@@ -40,8 +40,8 @@ class Pipeline:
             db_path=db_path,
             pipeline_version=pipeline_version
         )
-        
-        # For peak memory tracking
+
+        # Peak memory tracking
         self.peak_memory = 0
         self.monitoring = False
 
@@ -51,7 +51,7 @@ class Pipeline:
         while self.monitoring:
             current_mem = process.memory_info().rss / (1024 * 1024)  # in MB
             self.peak_memory = max(self.peak_memory, current_mem)
-            time.sleep(0.01)  # Sample every 10ms
+            time.sleep(0.01)  # Sample every 10 ms
 
     def run(self, file_list=None):
         """
@@ -70,11 +70,11 @@ class Pipeline:
         else:
             xml_files = file_list
 
-        print(f"Gefundene XML-Dateien: {len(xml_files)}")
+        print(f"Found XML files: {len(xml_files)}")
 
         successful_runs = 0
         failed_runs = 0
-        
+
         # Start memory monitoring
         self.peak_memory = 0
         self.monitoring = True
@@ -86,10 +86,10 @@ class Pipeline:
 
             # Start per-file performance tracking
             pipeline_start = time.perf_counter()
-            
+
             metrics = {}
 
-            # 1. Validation (self-logging)
+            # 1. Validation with internal provenance logging
             val_start = time.perf_counter()
             validation_result = self.validator.validate(xml_path)
             metrics['validation_time_ms'] = (time.perf_counter() - val_start) * 1000
@@ -98,7 +98,7 @@ class Pipeline:
                 failed_runs += 1
                 continue
 
-            # 2. Metadata extraction (self-logging)
+            # 2. Metadata extraction with internal provenance logging
             ext_start = time.perf_counter()
             meta = self.extractor.extract_metadata(xml_path)
             metrics['extraction_time_ms'] = (time.perf_counter() - ext_start) * 1000
@@ -109,7 +109,7 @@ class Pipeline:
 
             measurement_id = meta["data"]["id"]
 
-            # 3. Persist metadata to database (self-logging)
+            # 3. Persist metadata to database with internal provenance logging
             pers_start = time.perf_counter()
             ok, err = self.extractor.insert_metadata(meta["data"], xml_path)
             metrics['persistence_time_ms'] = (time.perf_counter() - pers_start) * 1000
@@ -120,8 +120,8 @@ class Pipeline:
 
             # 4. Compute total pipeline metrics
             metrics['processing_time_ms'] = (time.perf_counter() - pipeline_start) * 1000
-            
-            # Peak memory is tracked by background thread
+
+            # Peak memory is tracked by the background thread
             metrics['memory_peak_mb'] = self.peak_memory
 
             # 5. Log pipeline completion with full stage metrics
@@ -149,13 +149,12 @@ class Pipeline:
             "total": len(xml_files),
             "successful": successful_runs,
             "failed": failed_runs,
-            "peak_memory_mb": self.peak_memory  # True peak across entire batch
+            "peak_memory_mb": self.peak_memory  # True peak across the entire batch
         }
 
 
 if __name__ == "__main__":
     pipeline = Pipeline()
     result = pipeline.run()
-    print(f"\nErgebnis: {result['successful']}/{result['total']} erfolgreich verarbeitet")
-
+    print(f"\nResult: {result['successful']}/{result['total']} successfully processed")
     print(f"Peak Memory: {result['peak_memory_mb']:.2f}MB")
