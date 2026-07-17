@@ -10,7 +10,7 @@ License: MIT
 import os
 import sqlite3
 from lxml import etree
-from provenance import log_provenance   # <-- Provenance-Logger importieren
+from provenance import log_provenance   # Import provenance logger
 
 
 class MetadataExtractor:
@@ -20,13 +20,15 @@ class MetadataExtractor:
 
     def extract_metadata(self, xml_path):
         """
-        Extrahiert Metadaten aus einer XML-Datei.
-        Gibt ein Dict zurück:
-        {
-            "success": True/False,
-            "data": {...} oder None,
-            "error": Fehlermeldung oder None
-        }
+        Extract metadata from an XML file.
+
+        Returns:
+            dict: A dictionary with the following structure:
+            {
+                "success": True/False,
+                "data": {...} or None,
+                "error": error message or None
+            }
         """
         xml_filename = os.path.basename(xml_path)
 
@@ -183,4 +185,3 @@ if __name__ == "__main__":
     if result["success"]:
         ok, err = extractor.insert_metadata(result["data"], "../xml/valid_01.xml")
         print("DB insert:", ok, err)
-
