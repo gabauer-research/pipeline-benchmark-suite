@@ -4,44 +4,48 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![SQLite](https://img.shields.io/badge/Database-SQLite-lightgrey)](https://www.sqlite.org/)
 
-This repository contains the source code accompanying the paper:
+This repository contains the source code accompanying the project paper:
 
 > **A Modular XML-Based Pipeline for Reproducible Scientific Data Processing: Schema Validation and Provenance Tracking**  
-> Christoph Gabauer, *submitted to SN Computer Science*, 2026
+> Christoph Gabauer, accompanying project repository, 2026
 
 ---
 
 ## Overview
 
-The pipeline processes scientific measurement data stored in XML format. It validates documents against an XSD schema, transforms hierarchical data into a normalised relational SQLite database, and records provenance metadata for every processing step. The architecture is designed around a strict separation of concerns: validation, persistence, provenance tracking, and orchestration are implemented as independent modules.
+The project implements a lightweight XML-based data processing pipeline for reproducible scientific measurement metadata processing. XML documents are validated against an XSD schema, selected metadata required for identification and provenance linkage are persisted in a SQLite database, and provenance metadata are recorded for each processing step.
+
+The architecture follows a modular design with a strict separation of concerns. Validation, metadata extraction, SQLite persistence, provenance tracking, and orchestration are implemented as independent components.
 
 Key properties:
-- 100% schema-based input validation via XSD
-- Lightweight provenance tracking (SQL-based, no external framework required)
+
+- Strict XSD-based input validation
+- Lightweight SQL-based provenance tracking without external workflow infrastructure
 - Deterministic, single-process execution model
-- Near-linear scalability (R² > 0.99 across batch sizes of 100–1000 files)
-- Constant memory footprint (~34 MB independent of batch size)
-- Alignment with FAIR principles (Interoperability, Reusability)
+- Linear scalability across batch sizes of 100, 200, 500, and 1000 XML files
+- Coefficient of determination of R² = 0.99997 for the fitted runtime model
+- Constant peak memory footprint of approximately 28 MB in the reported evaluation
+- FAIR-aligned support for interoperability and reusability
 
 ---
 
 ## Repository Structure
 
-```
+```text
 ├── src/
-│   ├── pipeline.py          # Orchestration module – controls end-to-end workflow
-│   ├── validator.py         # Validation module – XSD-based schema validation (lxml)
-│   ├── extractor.py         # Persistence module – metadata extraction and SQLite insert
-│   ├── provenance.py        # Provenance module – logs processing events to DB
-│   ├── db_init.py           # Database initialisation – creates schema and tables
-│   ├── xml_generator.py     # Test data generator – creates synthetic valid XML files
-│   └── experiment_runner.py # Performance evaluation – controlled batch experiments
+│   ├── pipeline.py          # Orchestration module controlling the end-to-end workflow
+│   ├── validator.py         # Validation module for XSD-based schema validation
+│   ├── extractor.py         # Extraction and persistence module for SQLite insertion
+│   ├── provenance.py        # Provenance module for logging processing events
+│   ├── db_init.py           # Database initialization script
+│   ├── xml_generator.py     # Synthetic XML data generator for experiments
+│   └── experiment_runner.py # Performance evaluation runner
 ├── schema/
-│   └── schema.xsd           # XML Schema Definition (authoritative data contract)
-├── xml/                     # Sample XML files (valid and invalid)
+│   └── schema.xsd           # XML Schema Definition used as the authoritative data contract
+├── xml/                     # Sample XML files for functional validation
 ├── xml_pool/                # Generated XML pool for performance experiments
-├── db/                      # SQLite database output (created at runtime)
-└── results/                 # Experiment results output
+├── db/                      # SQLite database output, created at runtime
+└── results/                 # Experiment result files, created at runtime
 ```
 
 ---
@@ -49,10 +53,10 @@ Key properties:
 ## Requirements
 
 - Python 3.13+
-- [lxml](https://lxml.de/) 6.0.2 – XML parsing and XSD validation
-- [psutil](https://github.com/giampaolo/psutil) 7.2.2 – memory monitoring
+- [lxml](https://lxml.de/) 6.0.2 for XML parsing and XSD validation
+- [psutil](https://github.com/giampaolo/psutil) 7.2.2 for memory monitoring
 
-Install dependencies:
+Install dependencies from the repository root:
 
 ```bash
 pip install -r requirements.txt
@@ -62,79 +66,100 @@ pip install -r requirements.txt
 
 ## Usage
 
+The scripts use relative paths and are therefore expected to be executed from the `src/` directory.
+
 ### Functional Validation
 
-The `xml/` directory contains five example documents (two valid, three intentionally
-invalid) that demonstrate the validation behaviour of the pipeline.
+The `xml/` directory contains five example documents: two valid XML files and three intentionally invalid XML files. These files demonstrate the validation and rejection behaviour of the pipeline.
 
-**1. Initialise the database**
+Run the functional validation workflow:
+
 ```bash
-python src/db_init.py
+cd src
+python db_init.py
+python pipeline.py
 ```
 
-**2. Run the pipeline**
-```bash
-python src/pipeline.py
-```
+The pipeline validates each file in `../xml/` against `../schema/schema.xsd`.
 
-The pipeline validates each file in `xml/` against `schema/schema.xsd`. Valid documents
-(`valid_01.xml`, `valid_02.xml`) are persisted to SQLite and provenance records are
-written for every processing event. Invalid documents (`invalid_constraints.xml`,
-`invalid_missing_metadata.xml`, `invalid_structure.xml`) are rejected at the validation
-stage and logged for auditability.
+Valid documents are persisted to SQLite and accompanied by provenance records. Invalid documents are rejected during schema validation and logged for auditability.
+
+Example files:
+
+```text
+valid_01.xml
+valid_02.xml
+invalid_constraints.xml
+invalid_missing_metadata.xml
+invalid_structure.xml
+```
 
 ---
 
-### Performance Evaluation
+## Performance Evaluation
 
-**1. Initialise the database**
+The performance evaluation executes controlled batch experiments with generated XML files.
+
+Run the full benchmark workflow:
+
 ```bash
-python src/db_init.py
+cd src
+python db_init.py
+python xml_generator.py
+python experiment_runner.py
 ```
 
-**2. Generate synthetic test data**
-```bash
-python src/xml_generator.py
+The benchmark uses batch sizes of 100, 200, 500, and 1000 XML files with 20 repeated runs per configuration. The database is reset before each measured run to ensure identical initial conditions. A warm-up run is performed before timed execution for each batch size.
+
+The following result files are written to `../results/`:
+
+```text
+experiment_results.txt
+raw_runtime_measurements.csv
 ```
 
-Generates 1000 schema-conformant XML files in `xml_pool/`.
+`experiment_results.txt` contains aggregated benchmark statistics, including mean runtime, median runtime, standard deviation, throughput, peak memory usage, per-file processing time, quartiles, and stage-level timings.
 
-**3. Run the experiments**
-```bash
-python src/experiment_runner.py
+`raw_runtime_measurements.csv` contains the raw measurements used for reproducible boxplot generation and external analysis.
+
+CSV columns:
+
+```text
+batch_size,run_id,runtime_ms,throughput_files_s,memory_peak_mb
 ```
-
-Executes controlled experiments across batch sizes of 100, 200, 500, and 1000 files
-with 20 repeated runs per configuration. Results are written to
-`results/experiment_results.txt`.
 
 ---
 
 ## Database Schema
 
-The SQLite database (`db/pipeline.db`) contains two tables:
+The SQLite database is created at runtime as `db/pipeline.db`. It contains two core tables: `metadata` and `provenance`.
 
-**`metadata`** – stores validated measurement records:
+### `metadata`
+
+The `metadata` table stores validated measurement metadata records.
 
 | Column | Type | Description |
 |---|---|---|
 | `id` | TEXT PK | Measurement identifier |
-| `timestamp` | TEXT | ISO 8601 timestamp |
+| `timestamp` | TEXT | Measurement timestamp |
 | `geraet` | TEXT | Device identifier |
 | `operator` | TEXT | Operator name |
 | `parameter` | TEXT | Measured parameter |
 
-**`provenance`** – records processing events for every file:
+### `provenance`
+
+The `provenance` table records processing events and benchmark-related runtime metadata.
 
 | Column | Type | Description |
 |---|---|---|
-| `measurement_id` | TEXT FK | Reference to metadata |
-| `step` | TEXT | Processing stage (validation / db_insert / pipeline) |
-| `status` | TEXT | Outcome (success / error) |
-| `message` | TEXT | Details or error message |
-| `timestamp` | TEXT | Event timestamp |
-| `xml_file` | TEXT | Source filename |
-| `xsd_schema` | TEXT | Schema filename |
+| `id` | INTEGER PK | Technical primary key |
+| `measurement_id` | TEXT FK | Reference to the corresponding metadata record |
+| `step` | TEXT | Processing stage, such as validation, db_insert, or pipeline |
+| `status` | TEXT | Processing outcome, such as success or error |
+| `message` | TEXT | Event details or error message |
+| `timestamp` | TEXT | Provenance event timestamp |
+| `xml_file` | TEXT | Source XML filename |
+| `xsd_schema` | TEXT | Referenced XSD schema |
 | `schema_version` | TEXT | Schema version |
 | `pipeline_version` | TEXT | Pipeline version |
 | `processing_time_ms` | REAL | Total processing time |
@@ -145,23 +170,30 @@ The SQLite database (`db/pipeline.db`) contains two tables:
 
 ---
 
-## Provenance Queries (Examples)
+## Provenance Queries
 
-Queries can be executed using the SQLite CLI or any SQLite-compatible client (e.g. [DB Browser for SQLite](https://sqlitebrowser.org/)).
+The provenance table can be queried using the SQLite CLI or any SQLite-compatible client, such as [DB Browser for SQLite](https://sqlitebrowser.org/).
+
+### Processing history for a specific file
 
 ```sql
--- Processing history for a specific file
 SELECT step, status, message, timestamp
 FROM provenance
 WHERE xml_file = 'valid_01.xml'
 ORDER BY timestamp;
+```
 
--- All validation errors
+### All validation errors
+
+```sql
 SELECT xml_file, message, timestamp
 FROM provenance
 WHERE step = 'validation' AND status = 'error';
+```
 
--- Performance summary per pipeline version
+### Performance summary per pipeline version
+
+```sql
 SELECT pipeline_version,
        AVG(processing_time_ms) AS mean_ms,
        AVG(memory_peak_mb)     AS mean_mb
@@ -174,19 +206,29 @@ GROUP BY pipeline_version;
 
 ## Reproducibility
 
-To reproduce the performance evaluation results reported in the paper, 
-follow the steps under [Performance Evaluation](#performance-evaluation).
+To reproduce the performance evaluation, follow the steps described in [Performance Evaluation](#performance-evaluation).
 
-Each run resets the database to identical initial conditions before 
-measurement. A warm-up run is performed prior to timed execution to 
-minimise caching effects.
+The evaluation protocol uses:
 
-Experimental configuration used in the paper:
-- OS: Windows 11 Pro (Build 26200)
-- CPU: 8 cores, 4.20 GHz
-- RAM: 32 GB
-- Python: 3.13.11
-- SQLite: 3.51.2
+- batch sizes of 100, 200, 500, and 1000 XML files
+- 20 repeated runs per batch size
+- database reset before each measured run
+- one warm-up run per batch size
+- high-resolution runtime measurement
+- peak RSS memory measurement
+- export of raw benchmark measurements to CSV
+
+Experimental configuration used for the reported results:
+
+| Component | Configuration |
+|---|---|
+| Operating system | Windows 11 Pro, Build 26200 |
+| CPU | 8 cores, 4.20 GHz |
+| RAM | 32 GB |
+| Python | 3.13.11 |
+| SQLite | 3.51.2 |
+
+Runtime values may vary depending on hardware, operating-system state, and background processes. The raw CSV output is intended to support transparent inspection and reproducible visualization of the reported benchmark distribution.
 
 ---
 
