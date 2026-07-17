@@ -20,13 +20,13 @@ PUMPEN = ["Pumpe_1", "Pumpe_2", "Pumpe_3", "Pumpe_Alpha", "Pumpe_Beta"]
 
 def generate_xml(measurement_id, geraet, operator, parameter, timestamp):
     """Generate a valid XML file conforming to the XSD schema."""
-    
+
     # Random measurement values
     druck = round(random.uniform(1.0, 10.0), 2)
     temperatur = round(random.uniform(-50.0, 150.0), 2)
     frequenz = round(random.uniform(50.0, 60.0), 2)
     pumpe = random.choice(PUMPEN)
-    
+
     # Random number of sensors (2-5)
     num_sensors = random.randint(2, 5)
     sensoren_xml = ""
@@ -38,7 +38,7 @@ def generate_xml(measurement_id, geraet, operator, parameter, timestamp):
                             <wert>{sensor_wert}</wert>
                         </sensor>
 """
-    
+
     xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
 <measurement>
     <metadata>
@@ -57,7 +57,7 @@ def generate_xml(measurement_id, geraet, operator, parameter, timestamp):
 {sensoren_xml}        </sensoren>
     </data>
 </measurement>"""
-    
+
     return xml_content
 
 
@@ -68,35 +68,34 @@ def generate_dataset(num_files=1000):
     Args:
         num_files: Number of XML files to generate.
     """
-    
+
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    
-    print(f"Generiere {num_files} XSD-konforme XML-Dateien...")
-    
+
+    print(f"Generating {num_files} XSD-conformant XML files...")
+
     base_time = datetime(2024, 1, 1, 10, 0, 0)
-    
+
     for i in range(num_files):
         measurement_id = f"M{i+1:06d}"
         geraet = random.choice(GERAETE)
         operator = random.choice(OPERATORS)
         parameter = random.choice(PARAMETERS)
         timestamp = (base_time + timedelta(minutes=i)).isoformat()
-        
+
         xml_content = generate_xml(measurement_id, geraet, operator, parameter, timestamp)
-        
+
         filename = f"measurement_{i+1:06d}.xml"
         filepath = os.path.join(OUTPUT_DIR, filename)
-        
+
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(xml_content)
-        
+
         if (i + 1) % 100 == 0:
-            print(f"  {i + 1}/{num_files} erstellt...")
-    
-    print(f"\n✓ {num_files} XSD-konforme XML-Dateien erstellt in: {OUTPUT_DIR}")
+            print(f"  {i + 1}/{num_files} created...")
+
+    print(f"\n✓ {num_files} XSD-conformant XML files created in: {OUTPUT_DIR}")
 
 
 if __name__ == "__main__":
     # Generate 1000 distinct XML files
-
     generate_dataset(1000)
