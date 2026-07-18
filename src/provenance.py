@@ -2,7 +2,7 @@
 """
 Provenance logger for the XML measurement data pipeline.
 Writes structured provenance records to SQLite with stage-level
-performance metrics for FAIR-compliant reproducibility.
+performance metrics for FAIR-aligned reproducibility.
 
 License: MIT
 """
