@@ -45,8 +45,13 @@ Key properties:
 ├── xml/                     # Sample XML files for functional validation
 ├── xml_pool/                # Generated XML pool for performance experiments
 ├── db/                      # SQLite database output, created at runtime
-└── results/                 # Experiment result files, created at runtime
+└── results/
+    └── reported/
+        ├── experiment_results.txt
+        └── raw_runtime_measurements.csv
 ```
+
+The files in `results/reported/` contain the benchmark artifacts reported in the accompanying project paper. Running the experiment runner creates new local result files directly in `results/`.
 
 ---
 
@@ -111,7 +116,7 @@ python experiment_runner.py
 
 The benchmark uses batch sizes of 100, 200, 500, and 1000 XML files with 20 repeated runs per configuration. The database is reset before each measured run to ensure identical initial conditions. A warm-up run is performed before timed execution for each batch size.
 
-The following result files are written to `../results/`:
+Running `src/experiment_runner.py` generates new local result files in `../results/`:
 
 ```text
 experiment_results.txt
@@ -127,6 +132,15 @@ CSV columns:
 ```text
 batch_size,run_id,runtime_ms,throughput_files_s,memory_peak_mb
 ```
+
+The benchmark artifacts reported in the accompanying project paper are stored separately in:
+
+```text
+results/reported/experiment_results.txt
+results/reported/raw_runtime_measurements.csv
+```
+
+This separation prevents local reruns from overwriting or being confused with the reported measurements used in the paper.
 
 ---
 
@@ -228,7 +242,9 @@ Experimental configuration used for the reported results:
 | Python | 3.13.11 |
 | SQLite | 3.51.2 |
 
-Runtime values may vary depending on hardware, operating-system state, and background processes. The raw CSV output is intended to support transparent inspection and reproducible visualization of the reported benchmark distribution.
+Runtime and memory values may vary depending on hardware, operating-system state, open applications, Python process baseline, and background processes. Therefore, a new local rerun is expected to reproduce the overall behaviour of the evaluation, such as linear runtime scaling and stable memory consumption across increasing batch sizes, but not necessarily the exact numerical values reported in the paper.
+
+The reported benchmark artifacts used for the accompanying project paper are preserved in `results/reported/` for transparent inspection and comparison.
 
 ---
 
