@@ -1,0 +1,188 @@
+================================================================================
+PIPELINE PERFORMANCE EVALUATION RESULTS
+================================================================================
+
+
+Batch Size: 100 files
+----------------------------------------
+Runs: 20
+Mean Runtime: 1968.85ms (±26.36ms)
+Median Runtime: 1972.62ms
+Min Runtime: 1927.09ms
+Max Runtime: 2020.82ms
+Runtime Q1: 1948.89ms
+Runtime Q3: 1982.86ms
+Runtime IQR: 33.96ms
+
+Raw Runtime Measurements [ms]:
+  Run 01: 1942.66ms
+  Run 02: 1970.30ms
+  Run 03: 1980.43ms
+  Run 04: 1969.34ms
+  Run 05: 1976.17ms
+  Run 06: 1993.03ms
+  Run 07: 2020.82ms
+  Run 08: 1974.94ms
+  Run 09: 1989.90ms
+  Run 10: 1980.95ms
+  Run 11: 2011.49ms
+  Run 12: 1929.65ms
+  Run 13: 1953.54ms
+  Run 14: 1988.57ms
+  Run 15: 1950.17ms
+  Run 16: 1927.48ms
+  Run 17: 1968.67ms
+  Run 18: 1927.09ms
+  Run 19: 1976.80ms
+  Run 20: 1945.06ms
+
+Mean Throughput: 50.80 files/s
+Median Throughput: 50.69 files/s
+Mean Peak RSS: 27.82MB (±0.07MB)
+Median Peak RSS: 27.83MB
+Mean Processing Time per File: 19.69ms
+Median Processing Time per File: 19.73ms
+
+Stage Breakdown:
+  Validation   - Mean: 4.60ms (±1.78ms), Median: 4.33ms
+  Extraction   - Mean: 3.79ms (±0.41ms), Median: 3.73ms
+  Persistence  - Mean: 7.29ms (±0.33ms), Median: 7.24ms
+
+
+Batch Size: 200 files
+----------------------------------------
+Runs: 20
+Mean Runtime: 3913.76ms (±53.53ms)
+Median Runtime: 3909.57ms
+Min Runtime: 3769.91ms
+Max Runtime: 4069.22ms
+Runtime Q1: 3893.14ms
+Runtime Q3: 3940.31ms
+Runtime IQR: 47.17ms
+
+Raw Runtime Measurements [ms]:
+  Run 01: 3769.91ms
+  Run 02: 4069.22ms
+  Run 03: 3953.46ms
+  Run 04: 3906.74ms
+  Run 05: 3914.97ms
+  Run 06: 3887.44ms
+  Run 07: 3898.92ms
+  Run 08: 3944.34ms
+  Run 09: 3942.65ms
+  Run 10: 3897.38ms
+  Run 11: 3939.53ms
+  Run 12: 3888.03ms
+  Run 13: 3894.74ms
+  Run 14: 3918.34ms
+  Run 15: 3883.83ms
+  Run 16: 3952.14ms
+  Run 17: 3897.02ms
+  Run 18: 3912.39ms
+  Run 19: 3888.34ms
+  Run 20: 3915.91ms
+
+Mean Throughput: 51.11 files/s
+Median Throughput: 51.16 files/s
+Mean Peak RSS: 27.92MB (±0.03MB)
+Median Peak RSS: 27.91MB
+Mean Processing Time per File: 19.57ms
+Median Processing Time per File: 19.55ms
+
+Stage Breakdown:
+  Validation   - Mean: 4.64ms (±1.21ms), Median: 4.27ms
+  Extraction   - Mean: 3.79ms (±0.19ms), Median: 3.75ms
+  Persistence  - Mean: 7.40ms (±0.60ms), Median: 7.27ms
+
+
+Batch Size: 500 files
+----------------------------------------
+Runs: 20
+Mean Runtime: 9891.72ms (±181.60ms)
+Median Runtime: 9888.27ms
+Min Runtime: 9265.78ms
+Max Runtime: 10182.01ms
+Runtime Q1: 9855.01ms
+Runtime Q3: 9914.94ms
+Runtime IQR: 59.93ms
+
+Raw Runtime Measurements [ms]:
+  Run 01: 9265.78ms
+  Run 02: 9897.66ms
+  Run 03: 9889.60ms
+  Run 04: 9931.68ms
+  Run 05: 9857.12ms
+  Run 06: 9860.46ms
+  Run 07: 9847.72ms
+  Run 08: 9886.95ms
+  Run 09: 9857.94ms
+  Run 10: 9881.66ms
+  Run 11: 9848.67ms
+  Run 12: 9834.31ms
+  Run 13: 9899.47ms
+  Run 14: 9892.84ms
+  Run 15: 9818.70ms
+  Run 16: 9909.36ms
+  Run 17: 10171.17ms
+  Run 18: 10095.82ms
+  Run 19: 10005.42ms
+  Run 20: 10182.01ms
+
+Mean Throughput: 50.56 files/s
+Median Throughput: 50.56 files/s
+Mean Peak RSS: 28.22MB (±0.14MB)
+Median Peak RSS: 28.25MB
+Mean Processing Time per File: 19.78ms
+Median Processing Time per File: 19.78ms
+
+Stage Breakdown:
+  Validation   - Mean: 5.03ms (±1.84ms), Median: 4.42ms
+  Extraction   - Mean: 3.91ms (±0.25ms), Median: 3.86ms
+  Persistence  - Mean: 7.58ms (±0.55ms), Median: 7.48ms
+
+
+Batch Size: 1000 files
+----------------------------------------
+Runs: 20
+Mean Runtime: 20005.15ms (±352.57ms)
+Median Runtime: 20054.90ms
+Min Runtime: 18574.90ms
+Max Runtime: 20444.74ms
+Runtime Q1: 20006.33ms
+Runtime Q3: 20099.73ms
+Runtime IQR: 93.40ms
+
+Raw Runtime Measurements [ms]:
+  Run 01: 18574.90ms
+  Run 02: 20096.56ms
+  Run 03: 20444.74ms
+  Run 04: 20095.30ms
+  Run 05: 20201.92ms
+  Run 06: 20129.04ms
+  Run 07: 20147.92ms
+  Run 08: 20066.70ms
+  Run 09: 20010.32ms
+  Run 10: 20048.10ms
+  Run 11: 20072.18ms
+  Run 12: 19954.38ms
+  Run 13: 19994.37ms
+  Run 14: 20055.42ms
+  Run 15: 19983.49ms
+  Run 16: 20109.25ms
+  Run 17: 20054.37ms
+  Run 18: 20024.23ms
+  Run 19: 20052.31ms
+  Run 20: 19987.49ms
+
+Mean Throughput: 50.00 files/s
+Median Throughput: 49.86 files/s
+Mean Peak RSS: 28.45MB (±0.23MB)
+Median Peak RSS: 28.34MB
+Mean Processing Time per File: 20.01ms
+Median Processing Time per File: 20.05ms
+
+Stage Breakdown:
+  Validation   - Mean: 5.09ms (±1.54ms), Median: 4.33ms
+  Extraction   - Mean: 3.80ms (±0.28ms), Median: 3.74ms
+  Persistence  - Mean: 7.40ms (±0.62ms), Median: 7.29ms
+
