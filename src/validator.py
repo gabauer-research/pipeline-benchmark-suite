@@ -57,7 +57,7 @@ class XMLValidator:
                 "errors": []
             }
 
-        except etree.DocumentInvalid as e:
+        except etree.DocumentInvalid:
             # Extract validation errors
             error_log = self.schema.error_log
             errors = [str(err) for err in error_log]
@@ -80,7 +80,7 @@ class XMLValidator:
             }
 
         except Exception as e:
-            # General errors (e.g. file not found)
+            # General errors, such as missing files or malformed XML documents
             msg = f"Unexpected error: {str(e)}"
 
             log_provenance(
@@ -105,6 +105,5 @@ if __name__ == "__main__":
     test_file = "../xml/valid_01.xml"
     result = validator.validate(test_file)
 
-    print(f"Validierung von {test_file}:")
+    print(f"Validation of {test_file}:")
     print(result)
-

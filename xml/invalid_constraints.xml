@@ -7,9 +7,9 @@
     </metadata>
 
     <data>
-        <druck>-5.0</druck> <!-- ungültig -->
-        <temperatur>-300.0</temperatur> <!-- ungültig -->
-        <frequenz>-10.0</frequenz> <!-- ungültig -->
+        <druck>-5.0</druck> <!-- invalid -->
+        <temperatur>-300.0</temperatur> <!-- invalid -->
+        <frequenz>-10.0</frequenz> <!-- invalid -->
         <pumpe>ON</pumpe>
 
         <sensoren>

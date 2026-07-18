@@ -12,6 +12,6 @@
         <frequenz>60.0</frequenz>
         <pumpe>OFF</pumpe>
 
-        <!-- sensoren fehlt komplett -->
+        <!-- sensoren element intentionally omitted -->
     </data>
 </measurement>

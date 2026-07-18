@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 Database initialization for the XML measurement data pipeline.
-Creates metadata and provenance tables for FAIR-compliant provenance logging.
+Creates metadata and provenance tables for FAIR-aligned provenance logging.
 
 License: MIT
 """
 
 import sqlite3
+
 
 def init_db():
     """Initialize SQLite database and create metadata and provenance tables if they do not exist."""
@@ -47,6 +48,6 @@ def init_db():
     conn.commit()
     conn.close()
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     init_db()

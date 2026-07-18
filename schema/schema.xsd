@@ -29,7 +29,7 @@
                     <xs:complexType>
                         <xs:sequence>
 
-                            <!-- Messwerte -->
+                            <!-- Measurement values -->
                             <xs:element name="druck">
                                 <xs:simpleType>
                                     <xs:restriction base="xs:decimal">
@@ -56,7 +56,7 @@
 
                             <xs:element name="pumpe" type="xs:string"/>
 
-                            <!-- Sensorliste -->
+                            <!-- Sensor list -->
                             <xs:element name="sensoren">
                                 <xs:complexType>
                                     <xs:sequence>

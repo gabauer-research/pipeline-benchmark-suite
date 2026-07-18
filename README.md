@@ -44,6 +44,7 @@ Key properties:
 │   └── schema.xsd           # XML Schema Definition used as the authoritative data contract
 ├── xml/                     # Sample XML files for functional validation
 ├── xml_pool/                # Generated XML pool for performance experiments
+├── xml_experiment/          # Temporary working directory for benchmark batches
 ├── db/                      # SQLite database output, created at runtime
 └── results/
     └── reported/
